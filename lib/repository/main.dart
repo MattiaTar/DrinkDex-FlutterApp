@@ -1,5 +1,7 @@
 import 'package:bartolinimauri/pages/home_page.dart';
 import 'package:bartolinimauri/pages/login_page.dart';
+import 'package:bartolinimauri/pages/favorite_page.dart';
+import 'package:bartolinimauri/pages/detail_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -19,7 +21,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),      ),
       initialRoute: '/',
       routes: {
-        '/': (context) => HomePage(),
+        '/': (context) => LoginPage(),
         '/HomePage': (context) => HomePage(),
       },
     );

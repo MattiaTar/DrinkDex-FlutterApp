@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'detail_page.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -152,7 +154,7 @@ class _SearchPageState extends State<SearchPage> {
             },
           ),
         )
-            : Text('Nessun Coctail trovato'),
+            : Text('Nessun Coktail trovato'),
       ],
     );
   }
@@ -163,54 +165,6 @@ class FavoritePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Text('Pagina dei preferiti'),
-    );
-  }
-}
-
-class DetailPage extends StatelessWidget {
-  final Cocktail cocktail;
-
-  DetailPage({required this.cocktail});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(cocktail.strDrink),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.network(cocktail.strDrinkThumb),
-            SizedBox(height: 16.0),
-            Text(
-              cocktail.strDrink,
-              style: TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class Cocktail {
-  final String strDrink;
-  final String strDrinkThumb;
-
-  Cocktail({
-    required this.strDrink,
-    required this.strDrinkThumb,
-  });
-
-  factory Cocktail.fromJson(Map<String, dynamic> json) {
-    return Cocktail(
-      strDrink: json['strDrink'],
-      strDrinkThumb: json['strDrinkThumb'],
     );
   }
 }
