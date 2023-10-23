@@ -22,7 +22,7 @@ class _DetailPageState extends State<DetailPage> {
     super.initState();
     getDrinkDetails(widget.cocktail.strDrink);
   }
-
+  bool _isFavorite = false;
   Future<void> getDrinkDetails(String drinkName) async {
     String url =
         'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=$drinkName';
@@ -70,9 +70,9 @@ class _DetailPageState extends State<DetailPage> {
               widget.cocktail.strDrink,
               style: TextStyle(
                 fontSize: 22.0,
-                color: Colors.red,
+                color: _isFavorite ? Colors.red : null,
                 fontWeight: FontWeight.bold,
-              ),
+              ),    //agiunto is favorite
             ),
             SizedBox(height: 16.0),
             Text(

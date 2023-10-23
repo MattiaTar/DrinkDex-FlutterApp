@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
 import 'detail_page.dart';
 
 void main() => runApp(MyApp());
@@ -16,8 +15,10 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
+//aggiunto questo e appBar
 class HomePage extends StatefulWidget {
+  get cocktail => null;
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -28,7 +29,7 @@ class _HomePageState extends State<HomePage> {
     SearchPage(),
     FavoritePage(),
   ];
-
+  bool _isFavorite = false;
   void onTabTapped(int index) {
     setState(() {
       _currentIndex = index;
@@ -39,7 +40,21 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('DRINKDEX'),
+        title: Text(widget.cocktail.strDrink),
+        actions: [
+          IconButton(
+            icon: Icon(
+
+              _isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: _isFavorite ? Colors.red : null,
+            ),
+            onPressed: () {
+              setState(() {
+                _isFavorite = !_isFavorite;
+              });
+            },
+          ),
+        ],
       ),
       body: _children[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -122,7 +137,7 @@ class _SearchPageState extends State<SearchPage> {
               }
             },
             decoration: InputDecoration(
-              labelText: 'Cerca un cocktail',
+              labelText: 'Cerca un cocktail Alcolizzato',
               border: OutlineInputBorder(),
             ),
           ),
@@ -154,7 +169,7 @@ class _SearchPageState extends State<SearchPage> {
             },
           ),
         )
-            : Text('Nessun Coktail trovato'),
+            : Text('Nessun Coktail trovato Alcolizzato'),
       ],
     );
   }
