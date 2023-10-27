@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'detail_page.dart';
+import 'search_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -9,30 +7,33 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Navigation Bar',
-      theme: ThemeData(),
+      title: 'Cocktails App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
       home: HomePage(),
     );
   }
 }
-//aggiunto questo e appBar
-class HomePage extends StatefulWidget {
-  get cocktail => null;
 
+class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  int _currentIndex = 0;
-  final List<Widget> _children = [
-    SearchPage(),
-    FavoritePage(),
+  int _selectedIndex = 0;
+  static const TextStyle optionStyle =
+  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
+  final List<Widget> _widgetOptions = <Widget>[
+    SearchTab(),
+    FavoritesTab(),
   ];
-  bool _isFavorite = false;
-  void onTabTapped(int index) {
+
+  void _onItemTapped(int index) {
     setState(() {
-      _currentIndex = index;
+      _selectedIndex = index;
     });
   }
 
@@ -40,142 +41,31 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.cocktail.strDrink),
-        actions: [
-          IconButton(
-            icon: Icon(
-
-              _isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: _isFavorite ? Colors.red : null,
-            ),
-            onPressed: () {
-              setState(() {
-                _isFavorite = !_isFavorite;
-              });
-            },
-          ),
-        ],
+        title: const Text('Cocktails App'),
       ),
-      body: _children[_currentIndex],
+      body: Center(
+        child: _widgetOptions.elementAt(_selectedIndex),
+      ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.lightGreen,
-        unselectedItemColor: Colors.black,
-        currentIndex: _currentIndex,
-        onTap: onTabTapped,
-        items: [
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
-            label: "Cerca",
+            label: 'Cerca',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite),
-            label: "Preferiti",
+            label: 'Preferiti',
           ),
         ],
-        selectedItemColor: Colors.white,
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
       ),
     );
   }
 }
 
-class SearchPage extends StatefulWidget {
-  @override
-  _SearchPageState createState() => _SearchPageState();
-}
-
-class _SearchPageState extends State<SearchPage> {
-  TextEditingController _searchController = TextEditingController();
-  List<Cocktail> _cocktails = [];
-  bool _isLoading = false;
-
-  Future<void> _searchCocktails(String query) async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    String url =
-        'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=$query';
-
-    try {
-      final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final drinks = data['drinks'];
-
-        if (drinks != null) {
-          _cocktails = List<Cocktail>.from(
-            drinks.map((drink) => Cocktail.fromJson(drink)),
-          );
-        } else {
-          _cocktails = [];
-        }
-      } else {
-        _cocktails = [];
-      }
-    } catch (e) {
-      _cocktails = [];
-      print('Error: $e');
-    }
-
-    setState(() {
-      _isLoading = false;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.all(16.0),
-          child: TextField(
-            controller: _searchController,
-            onChanged: (value) {
-              if (value.length > 0) {
-                _searchCocktails(value);
-              }
-            },
-            decoration: InputDecoration(
-              labelText: 'Cerca un cocktail Alcolizzato',
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ),
-        _isLoading
-            ? CircularProgressIndicator()
-            : _cocktails.isNotEmpty
-            ? Expanded(
-          child: ListView.builder(
-            itemCount: _cocktails.length,
-            itemBuilder: (context, index) {
-              Cocktail cocktail = _cocktails[index];
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DetailPage(cocktail: cocktail),
-                    ),
-                  );
-                },
-                child: Card(
-                  child: ListTile(
-                    leading: Image.network(cocktail.strDrinkThumb),
-                    title: Text(cocktail.strDrink),
-                  ),
-                ),
-              );
-            },
-          ),
-        )
-            : Text('Nessun Coktail trovato Alcolizzato'),
-      ],
-    );
-  }
-}
-
-class FavoritePage extends StatelessWidget {
+class FavoritesTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(

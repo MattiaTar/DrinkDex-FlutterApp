@@ -1,6 +1,6 @@
 import 'package:bartolinimauri/pages/home_page.dart';
 import 'package:bartolinimauri/pages/login_page.dart';
-import 'package:bartolinimauri/pages/favorite_page.dart';
+import 'package:bartolinimauri/pages/search_page.dart';
 import 'package:bartolinimauri/pages/detail_page.dart';
 import 'package:flutter/material.dart';
 
