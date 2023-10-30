@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Cocktails App',
+      title: 'DrinkDex',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
@@ -82,7 +82,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cocktails App'),
+        title: const Text('DrinkDex'),
+        leading: Icon(Icons.local_gas_station),
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
@@ -121,9 +122,8 @@ class FavoritesTab extends StatelessWidget {
           title: Text('Cocktail ID: $cocktailId'),
           trailing: IconButton(
             icon: Icon(Icons.favorite),
-            color: Colors.red,
+            color: Colors.amber[800],
             onPressed: () {
-              // qui mettere le sitruzione
               _homeState?.removeFromFavorites(cocktailId);
             },
           ),
@@ -132,4 +132,3 @@ class FavoritesTab extends StatelessWidget {
     );
   }
 }
-

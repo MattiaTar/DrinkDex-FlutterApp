@@ -38,6 +38,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Icon(Icons.local_gas_station),
             Text(
               "DrinkDex",
               style: TextStyle(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
 class CocktailDetailPage extends StatelessWidget {
   final String cocktailId;
 
@@ -33,8 +34,7 @@ class CocktailDetailPage extends StatelessWidget {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(
-                child: Text(
-                    'Errore durante il recupero dei dettagli del cocktail'));
+                child: Text('Errore durante il recupero dei dettagli del cocktail'));
           } else {
             final cocktail = snapshot.data;
 
@@ -47,30 +47,38 @@ class CocktailDetailPage extends StatelessWidget {
                     padding: EdgeInsets.symmetric(vertical: 16.0),
                     child: Text(
                       cocktail['strDrink'],
-                      style: TextStyle(
-                          fontSize: 24.0, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red, // Aggiunta del colore rosso
+                      ), // Aggiunta per centrare il titolo
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.only(bottom: 8.0),
                     child: Text(
                       'Ingredienti:',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                   Text(cocktail['strIngredient1']),
                   Text(cocktail['strIngredient2']),
-                  // Aggiungi più ingredienti qui se necessario
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 8.0),
                     child: Text(
                       'Istruzioni:',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black, // Resta nero il colore delle istruzioni
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                   Text(
-                    cocktail['strInstructionsIT'] ??
-                        cocktail['strInstructions'],
+                    cocktail['strInstructionsIT'] ?? cocktail['strInstructions'],
                   ),
                 ],
               ),
@@ -81,3 +89,4 @@ class CocktailDetailPage extends StatelessWidget {
     );
   }
 }
+

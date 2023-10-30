@@ -4,6 +4,11 @@ import 'dart:convert';
 import 'detail_page.dart';
 
 class SearchTab extends StatefulWidget {
+// posso anche togliere questi
+  void addToFavorites(String cocktailId) {}
+
+  void removeFromFavorites(String cocktailId) {}
+
   @override
   _SearchTabState createState() => _SearchTabState();
 }
@@ -38,27 +43,38 @@ class _SearchTabState extends State<SearchTab> {
       throw Exception('Errore durante la ricerca dei cocktail');
     }
   }
-
   Widget _buildCocktailList() {
     if (_isLoading) {
       return Center(child: CircularProgressIndicator());
     } else if (_cocktails.isEmpty) {
-      return Center(child: Text('Nessun cocktail trovato'));
+      return Center(child: Text('scrivi BENE maledizzione'));
     } else {
       return ListView.builder(
         itemCount: _cocktails.length,
         itemBuilder: (context, index) {
           final cocktail = _cocktails[index];
+          bool isFavorite = false;
+
           return Card(
             child: ListTile(
               leading: Image.network(cocktail['strDrinkThumb']),
               title: Text(cocktail['strDrink']),
               trailing: IconButton(
-                icon: Icon(Icons.favorite),
-                color: Colors.red,
+                icon: Icon(
+                 // provare ad utilizzare i setState
+                  isFavorite == true ? Icons.favorite : Icons.favorite_border,
+                ),
+                color: isFavorite ? Colors.amber[800] : null,
                 onPressed: () {
-                  //qui Mettere le istruzione per fare in modo chge quando il cuore vienne cliccato venga aggiunto alla schermata dei preferiti
-
+                  setState(() {
+                    isFavorite = !isFavorite ;
+                  });
+                  // Aggiunta/rimozione del cocktail dai preferiti
+                  if (isFavorite) {
+                    widget.addToFavorites(cocktail['idDrink']);
+                  } else {
+                    widget.removeFromFavorites(cocktail['idDrink']);
+                  }
                 },
               ),
               onTap: () {
@@ -86,7 +102,11 @@ class _SearchTabState extends State<SearchTab> {
           TextField(
             controller: _searchController,
             decoration: InputDecoration(
-              labelText: 'Inserisci il nome del cocktail',
+              prefixIcon: Icon(Icons.search),
+              labelText: 'Alcolizzato',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+              ),
             ),
             onChanged: (query) => _fetchCocktails(query),
           ),
