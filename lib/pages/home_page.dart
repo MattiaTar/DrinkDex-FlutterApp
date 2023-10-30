@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'search_page.dart';
+
 
 void main() => runApp(MyApp());
 
@@ -9,7 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Cocktails App',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
       ),
       home: HomePage(),
     );
@@ -23,6 +25,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+  List<String> favorites = [];
+
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
@@ -31,10 +35,47 @@ class _HomePageState extends State<HomePage> {
     FavoritesTab(),
   ];
 
+  SharedPreferences? _sharedPreferences;
+
+  @override
+  void initState() {
+    super.initState();
+    SharedPreferences.getInstance().then((prefs) {
+      _sharedPreferences = prefs;
+      setState(() {
+        favorites = prefs.getStringList('favorites') ?? [];
+      });
+    });
+  }
+
+  Future<void> _saveFavorites(List<String> favorites) async {
+    if (_sharedPreferences != null) {
+      await _sharedPreferences!.setStringList('favorites', favorites);
+    }
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  void addToFavorites(String cocktailId) {
+    setState(() {
+      favorites.add(cocktailId);
+      _saveFavorites(favorites);
+    });
+  }
+
+  void removeFromFavorites(String cocktailId) {
+    setState(() {
+      favorites.remove(cocktailId);
+      _saveFavorites(favorites);
+    });
+  }
+
+  bool isFavorite(String cocktailId) {
+    return favorites.contains(cocktailId);
   }
 
   @override
@@ -68,8 +109,27 @@ class _HomePageState extends State<HomePage> {
 class FavoritesTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Pagina dei preferiti'),
+    final _homeState = context.findAncestorStateOfType<_HomePageState>();
+    final favorites = _homeState?.favorites ?? [];
+
+    return ListView.builder(
+      itemCount: favorites.length,
+      itemBuilder: (context, index) {
+        final cocktailId = favorites[index];
+
+        return ListTile(
+          title: Text('Cocktail ID: $cocktailId'),
+          trailing: IconButton(
+            icon: Icon(Icons.favorite),
+            color: Colors.red,
+            onPressed: () {
+              // qui mettere le sitruzione
+              _homeState?.removeFromFavorites(cocktailId);
+            },
+          ),
+        );
+      },
     );
   }
 }
+

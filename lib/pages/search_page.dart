@@ -53,11 +53,20 @@ class _SearchTabState extends State<SearchTab> {
             child: ListTile(
               leading: Image.network(cocktail['strDrinkThumb']),
               title: Text(cocktail['strDrink']),
+              trailing: IconButton(
+                icon: Icon(Icons.favorite),
+                color: Colors.red,
+                onPressed: () {
+                  //qui Mettere le istruzione per fare in modo chge quando il cuore vienne cliccato venga aggiunto alla schermata dei preferiti
+
+                },
+              ),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => CocktailDetailPage(cocktailId: cocktail['idDrink']),
+                    builder: (context) =>
+                        CocktailDetailPage(cocktailId: cocktail['idDrink']),
                   ),
                 );
               },

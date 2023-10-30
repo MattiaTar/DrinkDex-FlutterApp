@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 class CocktailDetailPage extends StatelessWidget {
   final String cocktailId;
 
@@ -9,7 +8,9 @@ class CocktailDetailPage extends StatelessWidget {
 
   Future<dynamic> _fetchCocktailDetail() async {
     final response = await http.get(
-        Uri.parse('https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=$cocktailId'));
+      Uri.parse(
+          'https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=$cocktailId'),
+    );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -31,9 +32,12 @@ class CocktailDetailPage extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Errore durante il recupero dei dettagli del cocktail'));
+            return Center(
+                child: Text(
+                    'Errore durante il recupero dei dettagli del cocktail'));
           } else {
             final cocktail = snapshot.data;
+
             return SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,7 +47,8 @@ class CocktailDetailPage extends StatelessWidget {
                     padding: EdgeInsets.symmetric(vertical: 16.0),
                     child: Text(
                       cocktail['strDrink'],
-                      style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 24.0, fontWeight: FontWeight.bold),
                     ),
                   ),
                   Padding(
@@ -64,7 +69,8 @@ class CocktailDetailPage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    cocktail['strInstructionsIT'] ?? cocktail['strInstructions'],
+                    cocktail['strInstructionsIT'] ??
+                        cocktail['strInstructions'],
                   ),
                 ],
               ),
