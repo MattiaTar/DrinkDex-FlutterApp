@@ -4,10 +4,15 @@ import 'dart:convert';
 import 'detail_page.dart';
 
 class SearchTab extends StatefulWidget {
-// posso anche togliere questi
-  void addToFavorites(String cocktailId) {}
+  final Function(String) addToFavorites;
+  final Function(String) removeFromFavorites;
+  final Map<String, Map<String, dynamic>> cocktailsById;
 
-  void removeFromFavorites(String cocktailId) {}
+  SearchTab({
+    required this.addToFavorites,
+    required this.removeFromFavorites,
+    required this.cocktailsById,
+  });
 
   @override
   _SearchTabState createState() => _SearchTabState();
@@ -16,7 +21,17 @@ class SearchTab extends StatefulWidget {
 class _SearchTabState extends State<SearchTab> {
   List<dynamic> _cocktails = [];
   bool _isLoading = false;
+  List<bool> isFavorite = [];
   TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    isFavorite = List.generate(_cocktails.length, (index) {
+      final cocktailId = _cocktails[index]['idDrink'];
+      return widget.cocktailsById.containsKey(cocktailId);
+    });
+  }
 
   void _fetchCocktails(String query) async {
     if (query.isEmpty) {
@@ -35,43 +50,55 @@ class _SearchTabState extends State<SearchTab> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+      final drinks = data['drinks'] as List<dynamic>;
+
       setState(() {
-        _cocktails = data['drinks'];
+        _cocktails = drinks;
         _isLoading = false;
+        isFavorite = List.generate(drinks.length, (index) {
+          final cocktailId = drinks[index]['idDrink'];
+          return widget.cocktailsById.containsKey(cocktailId);
+        });
       });
     } else {
       throw Exception('Errore durante la ricerca dei cocktail');
     }
   }
+
+  void addToFavorites(String cocktailId) {
+    widget.addToFavorites(cocktailId);
+    setState(() {
+      final index = _cocktails.indexWhere((cocktail) => cocktail['idDrink'] == cocktailId);
+      if (index >= 0) {
+        isFavorite[index] = true;
+      }
+    });
+  }
   Widget _buildCocktailList() {
     if (_isLoading) {
       return Center(child: CircularProgressIndicator());
     } else if (_cocktails.isEmpty) {
-      return Center(child: Text('scrivi BENE maledizzione'));
+      return Center(child: Text('cerca cosa vuoi bere'));
     } else {
       return ListView.builder(
         itemCount: _cocktails.length,
         itemBuilder: (context, index) {
           final cocktail = _cocktails[index];
-          bool isFavorite = false;
-
           return Card(
             child: ListTile(
               leading: Image.network(cocktail['strDrinkThumb']),
               title: Text(cocktail['strDrink']),
               trailing: IconButton(
                 icon: Icon(
-                 // provare ad utilizzare i setState
-                  isFavorite == true ? Icons.favorite : Icons.favorite_border,
+                  isFavorite[index] ? Icons.favorite : Icons.favorite_border,
                 ),
-                color: isFavorite ? Colors.amber[800] : null,
+                color: isFavorite[index] ? Colors.amber[800] : null,
                 onPressed: () {
                   setState(() {
-                    isFavorite = !isFavorite ;
+                    isFavorite[index] = !isFavorite[index];
                   });
-                  // Aggiunta/rimozione del cocktail dai preferiti
-                  if (isFavorite) {
-                    widget.addToFavorites(cocktail['idDrink']);
+                  if (isFavorite[index]) {
+                    addToFavorites(cocktail['idDrink']);
                   } else {
                     widget.removeFromFavorites(cocktail['idDrink']);
                   }
@@ -103,7 +130,7 @@ class _SearchTabState extends State<SearchTab> {
             controller: _searchController,
             decoration: InputDecoration(
               prefixIcon: Icon(Icons.search),
-              labelText: 'Alcolizzato',
+              labelText: 'Drink',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
               ),

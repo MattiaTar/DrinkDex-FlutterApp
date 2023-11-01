@@ -1,7 +1,10 @@
+import 'package:bartolinimauri/pages/search_tab.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'search_page.dart';
 
+import 'detail_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -27,50 +30,33 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   List<String> favorites = [];
 
-  static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-
-  final List<Widget> _widgetOptions = <Widget>[
-    SearchTab(),
-    FavoritesTab(),
-  ];
-
-  SharedPreferences? _sharedPreferences;
+  Map<String, Map<String, dynamic>> _cocktailsById = {};
 
   @override
   void initState() {
     super.initState();
     SharedPreferences.getInstance().then((prefs) {
-      _sharedPreferences = prefs;
       setState(() {
         favorites = prefs.getStringList('favorites') ?? [];
       });
     });
   }
 
-  Future<void> _saveFavorites(List<String> favorites) async {
-    if (_sharedPreferences != null) {
-      await _sharedPreferences!.setStringList('favorites', favorites);
-    }
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   void addToFavorites(String cocktailId) {
     setState(() {
       favorites.add(cocktailId);
-      _saveFavorites(favorites);
+      SharedPreferences.getInstance().then((prefs) {
+        prefs.setStringList('favorites', favorites);
+      });
     });
   }
 
   void removeFromFavorites(String cocktailId) {
     setState(() {
       favorites.remove(cocktailId);
-      _saveFavorites(favorites);
+      SharedPreferences.getInstance().then((prefs) {
+        prefs.setStringList('favorites', favorites);
+      });
     });
   }
 
@@ -86,7 +72,21 @@ class _HomePageState extends State<HomePage> {
         leading: Icon(Icons.local_gas_station),
       ),
       body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+        child: IndexedStack(
+          index: _selectedIndex,
+          children: <Widget>[
+            SearchTab(
+              addToFavorites: addToFavorites,
+              removeFromFavorites: removeFromFavorites,
+              cocktailsById: _cocktailsById,
+            ),
+            FavoritesTab(
+              favorites: favorites,
+              removeFromFavorites: removeFromFavorites,
+              cocktailsById: _cocktailsById,
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -101,30 +101,43 @@ class _HomePageState extends State<HomePage> {
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],
-        onTap: _onItemTapped,
+        onTap: (int index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
       ),
     );
   }
 }
 
 class FavoritesTab extends StatelessWidget {
+  final List<String> favorites;
+  final Function(String) removeFromFavorites;
+  final Map<String, Map<String, dynamic>> cocktailsById;
+
+  FavoritesTab({
+    required this.favorites,
+    required this.removeFromFavorites,
+    required this.cocktailsById,
+  });
+
   @override
   Widget build(BuildContext context) {
-    final _homeState = context.findAncestorStateOfType<_HomePageState>();
-    final favorites = _homeState?.favorites ?? [];
-
     return ListView.builder(
       itemCount: favorites.length,
       itemBuilder: (context, index) {
         final cocktailId = favorites[index];
+        final cocktail = cocktailsById[cocktailId];
 
         return ListTile(
-          title: Text('Cocktail ID: $cocktailId'),
+          leading: Image.network(cocktail?['strDrinkThumb'] ?? ''),
+          title: Text(cocktail?['strDrink'] ?? ''),
           trailing: IconButton(
             icon: Icon(Icons.favorite),
-            color: Colors.amber[800],
+            color: Colors.red,
             onPressed: () {
-              _homeState?.removeFromFavorites(cocktailId);
+              removeFromFavorites(cocktailId);
             },
           ),
         );
