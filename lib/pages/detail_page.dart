@@ -8,19 +8,20 @@ class CocktailDetailPage extends StatelessWidget {
   CocktailDetailPage({required this.cocktailId});
 
   Future<dynamic> _fetchCocktailDetail() async {
-    final response = await http.get(
-      Uri.parse(
-          'https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=$cocktailId'),
+    final url = Uri.parse(
+      'https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=$cocktailId',
     );
+
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return data['drinks'][0];
+      final cocktail = data['drinks'][0];
+      return cocktail;
     } else {
       throw Exception('Errore durante il recupero dei dettagli del cocktail');
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,6 +39,10 @@ class CocktailDetailPage extends StatelessWidget {
           } else {
             final cocktail = snapshot.data;
 
+            if (cocktail == null || cocktail.isEmpty) {
+              return Center(child: Text('Dettagli del cocktail non disponibili'));
+            }
+
             return SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,8 +55,8 @@ class CocktailDetailPage extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 24.0,
                         fontWeight: FontWeight.bold,
-                        color: Colors.red, // Aggiunta del colore rosso
-                      ), // Aggiunta per centrare il titolo
+                        color: Colors.red,
+                      ),
                     ),
                   ),
                   Padding(

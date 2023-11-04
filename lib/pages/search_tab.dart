@@ -45,40 +45,47 @@ class _SearchTabState extends State<SearchTab> {
       _isLoading = true;
     });
 
-    final url = Uri.parse('https://www.thecocktaildb.com/api/json/v1/1/search.php?s=$query');
+    final url = Uri.parse(
+      'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=$query',
+    );
+
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final drinks = data['drinks'] as List<dynamic>;
-
+      final cocktails = data['drinks'];
       setState(() {
-        _cocktails = drinks;
-        _isLoading = false;
-        isFavorite = List.generate(drinks.length, (index) {
-          final cocktailId = drinks[index]['idDrink'];
+        _cocktails = cocktails;
+        isFavorite = List.generate(_cocktails.length, (index) {
+          final cocktailId = _cocktails[index]['idDrink'];
           return widget.cocktailsById.containsKey(cocktailId);
         });
       });
     } else {
-      throw Exception('Errore durante la ricerca dei cocktail');
+      throw Exception('Errore durante il recupero dei cocktail');
     }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   void addToFavorites(String cocktailId) {
     widget.addToFavorites(cocktailId);
     setState(() {
-      final index = _cocktails.indexWhere((cocktail) => cocktail['idDrink'] == cocktailId);
+      final index = _cocktails.indexWhere((cocktail) =>
+      cocktail['idDrink'] == cocktailId);
       if (index >= 0) {
         isFavorite[index] = true;
       }
     });
   }
+
   Widget _buildCocktailList() {
     if (_isLoading) {
       return Center(child: CircularProgressIndicator());
     } else if (_cocktails.isEmpty) {
-      return Center(child: Text('cerca cosa vuoi bere'));
+      return Center(child: Text('Nessun cocktail trovato'));
     } else {
       return ListView.builder(
         itemCount: _cocktails.length,
@@ -130,7 +137,7 @@ class _SearchTabState extends State<SearchTab> {
             controller: _searchController,
             decoration: InputDecoration(
               prefixIcon: Icon(Icons.search),
-              labelText: 'Drink',
+              labelText: 'Cerca cocktail',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
               ),
