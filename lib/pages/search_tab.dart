@@ -113,11 +113,12 @@ class _SearchTabState extends State<SearchTab> {
               ),
               onTap: () {
                 Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        CocktailDetailPage(cocktailId: cocktail['idDrink']),
-                  ),
+                    context,
+                    MaterialPageRoute(
+                    builder: (context) => CocktailDetailPage(
+                  cocktailId: cocktail['idDrink'],
+                ),
+                    ),
                 );
               },
             ),

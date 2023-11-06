@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'detail_page.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -50,7 +52,7 @@ class _HomePageState extends State<HomePage> {
   }
 
 
-  @override
+
   void initState() {
     super.initState();
     SharedPreferences.getInstance().then((prefs) {
@@ -76,9 +78,7 @@ class _HomePageState extends State<HomePage> {
       SharedPreferences.getInstance().then((prefs) {
         prefs.setStringList('favorites', favorites);
       });
-    });
-    setState(() {
-      _cocktailsById.remove(cocktailId); // Aggiungi questa riga
+      _cocktailsById.remove(cocktailId);
     });
   }
 
@@ -86,7 +86,6 @@ class _HomePageState extends State<HomePage> {
     return favorites.contains(cocktailId);
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -97,7 +96,7 @@ class _HomePageState extends State<HomePage> {
         child: IndexedStack(
           index: _selectedIndex,
           children: <Widget>[
-            // Aggiorna il costruttore di SearchTab per includere `_cocktailsById`
+            // il costruttore di SearchTab per includere `_cocktailsById`
             SearchTab(
               addToFavorites: addToFavorites,
               removeFromFavorites: removeFromFavorites,
@@ -145,25 +144,38 @@ class FavoritesTab extends StatelessWidget {
     required this.cocktailsById,
   });
 
+
   @override
   Widget build(BuildContext context) {
-    return favorites.isEmpty ?
-    Center(child: Text('Aggiungi un drink ai tuoi preferiti')) :
-    ListView.builder(
+    return favorites.isEmpty
+        ? Center(child: Text('Aggiungi un drink ai tuoi preferiti'))
+        : ListView.builder(
       itemCount: favorites.length,
       itemBuilder: (context, index) {
         final cocktailId = favorites[index];
         final cocktail = cocktailsById[cocktailId];
 
-        return ListTile(
-          leading: Image.network(cocktail?['strDrinkThumb'] ?? ''),
-          title: Text(cocktail?['strDrink'] ?? ''),
-          trailing: IconButton(
-            icon: Icon(Icons.favorite),
-            color: Colors.amber[800],
-            onPressed: () {
-              removeFromFavorites(cocktailId);
+        return Card(
+          child: ListTile(
+            leading: Image.network(cocktail?['strDrinkThumb'] ?? ''),
+            title: Text(cocktail?['strDrink'] ?? ''),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CocktailDetailPage(
+                    cocktailId: cocktailId,
+                  ),
+                ),
+              );
             },
+            trailing: IconButton(
+              icon: Icon(Icons.favorite),
+              color: Colors.amber[800],
+              onPressed: () {
+                removeFromFavorites(cocktailId);
+              },
+            ),
           ),
         );
       },

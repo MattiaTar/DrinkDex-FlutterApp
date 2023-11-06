@@ -100,8 +100,7 @@ class _LoginPageState extends State<LoginPage> {
               child: Text('Login'),
               onPressed: areFieldsValid
                   ? () {
-                // Perform login logic here
-                Navigator.pushReplacementNamed(context, '/HomePage');
+                Navigator.pushReplacementNamed(context, 'HomePage');
               }
                   : null,
             ),

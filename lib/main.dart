@@ -1,6 +1,7 @@
 import 'package:bartolinimauri/pages/home_page.dart';
 import 'package:bartolinimauri/pages/login_page.dart';
 import 'package:flutter/material.dart';
+import 'Screen/SplashScreen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,8 +20,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),      ),
       initialRoute: '/',
       routes: {
-        '/': (context) => LoginPage(),
-        '/HomePage': (context) => HomePage(),
+        '/': (context) =>SplashScreen(), //la splash screen come schermata iniziale
+        'Loginpage': (context) => LoginPage(),
+        'HomePage': (context) => HomePage(),
       },
     );
   }

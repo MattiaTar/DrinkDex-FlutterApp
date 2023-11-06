@@ -8,9 +8,7 @@ class CocktailDetailPage extends StatelessWidget {
   CocktailDetailPage({required this.cocktailId});
 
   Future<dynamic> _fetchCocktailDetail() async {
-    final url = Uri.parse(
-      'https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=$cocktailId',
-    );
+    final url = Uri.parse('https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=$cocktailId', );
 
     final response = await http.get(url);
 
@@ -22,6 +20,7 @@ class CocktailDetailPage extends StatelessWidget {
       throw Exception('Errore durante il recupero dei dettagli del cocktail');
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,8 +33,7 @@ class CocktailDetailPage extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(
-                child: Text('Errore durante il recupero dei dettagli del cocktail'));
+            return Center(child: Text('Errore durante il recupero dei dettagli del cocktail'));
           } else {
             final cocktail = snapshot.data;
 
@@ -45,45 +43,59 @@ class CocktailDetailPage extends StatelessWidget {
 
             return SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center, // Modifica 1
                 children: <Widget>[
-                  Image.network(cocktail['strDrinkThumb']),
+                  Center(
+                    child: Image.network(cocktail['strDrinkThumb']),
+                  ),
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 16.0),
-                    child: Text(
-                      cocktail['strDrink'],
-                      style: const TextStyle(
-                        fontSize: 24.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
+                    child: Center(
+                      child: Text(
+                        cocktail['strDrink'],
+                        style: const TextStyle(
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
                       ),
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.only(bottom: 8.0),
-                    child: Text(
-                      'Ingredienti:',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                    child: Center( // Modifica 2
+                      child: Text(
+                        'Ingredienti',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ),
-                  Text(cocktail['strIngredient1']),
-                  Text(cocktail['strIngredient2']),
+                  Center(
+                    child: Text(cocktail['strIngredient1']),
+                  ),
+                  Center(
+                    child: Text(cocktail['strIngredient2']),
+                  ),
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 8.0),
-                    child: Text(
-                      'Istruzioni:',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black, // Resta nero il colore delle istruzioni
+                    child: Center(
+                      child: Text(
+                        'Istruzioni',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
                     ),
                   ),
-                  Text(
-                    cocktail['strInstructionsIT'] ?? cocktail['strInstructions'],
+                  Center(
+                    child: Text(
+                      cocktail['strInstructionsIT'] ?? cocktail['strInstructions'],
+                    ),
                   ),
                 ],
               ),
@@ -94,4 +106,3 @@ class CocktailDetailPage extends StatelessWidget {
     );
   }
 }
-
