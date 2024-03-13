@@ -6,6 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'detail_page.dart';
 
+
+//AGGiungere un bottone Random drink
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -32,7 +35,28 @@ class _HomePageState extends State<HomePage> {
   List<String> favorites = [];
   Map<String, Map<String, dynamic>> _cocktailsById = {};
   bool hasFavorites = false;
+  bool _dialogShown= false ;
 
+  // allerta tipo Pop UP 
+  void showDialogOnce(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Benvenuto e Attenzione'),
+          content: Text('Grazie per aver scaricato DrinkDex. Se vuoi bere e completare tutto il DrinkDex ti raccomandiamo di salvare i drink! Buona bevuta dal team DrinkDex.'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Grazie'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
   void getCocktailsById(String cocktailId) async {
     final url = Uri.parse(
       'https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=$cocktailId',
@@ -55,6 +79,13 @@ class _HomePageState extends State<HomePage> {
 
   void initState() {
     super.initState();
+    SharedPreferences.getInstance().then((prefs) {
+      _dialogShown = prefs.getBool('dialogShown') ?? false;
+      if (!_dialogShown) {
+        showDialogOnce(context);
+        prefs.setBool('dialogShown', true);
+      }
+    });
     SharedPreferences.getInstance().then((prefs) {
       setState(() {
         favorites = prefs.getStringList('favorites') ?? [];
@@ -89,14 +120,16 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.green,
         title: const Text('DrinkDex'),
         leading: Icon(Icons.local_gas_station),
+
       ),
       body: Center(
         child: IndexedStack(
           index: _selectedIndex,
           children: <Widget>[
-            // il costruttore di SearchTab per includere `_cocktailsById`
+
             SearchTab(
               addToFavorites: addToFavorites,
               removeFromFavorites: removeFromFavorites,

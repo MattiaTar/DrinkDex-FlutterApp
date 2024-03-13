@@ -1,4 +1,10 @@
+import 'package:bartolinimauri/Login/SecureStorage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:bartolinimauri/Login/SecureStorage.dart';
+
+
+/* implementare Scure storage per salvaguaradare i dati sensibili utente */
 
 class LoginPage extends StatefulWidget {
   @override
@@ -6,26 +12,41 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  bool isPasswordVisible = false;
+TextEditingController emailController = TextEditingController();
+TextEditingController passwordController = TextEditingController();
+final storage = SecureStorage();
+bool isPasswordVisible = false;
+bool areFieldsValid = false;
+bool? isChecked = false;
 
-  bool areFieldsValid = false;
-  String defaultEmail = 'prof';
-  String defaultPassword = '1234';
-
-  void checkFieldsValidity() {
-    if (emailController.text == defaultEmail &&
-        passwordController.text == defaultPassword) {
-      setState(() {
-        areFieldsValid = true;
-      });
-    } else {
-      setState(() {
-        areFieldsValid = false;
-      });
-    }
+void checkFieldsValidity() {
+  if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+    setState(() {
+      areFieldsValid = true;
+    });
+  } else {
+    setState(() {
+      areFieldsValid = false;
+    });
   }
+}
+
+void attemptLogin() {
+  checkFieldsValidity();
+  if (areFieldsValid) {
+    String username = emailController.text;
+    String password = passwordController.text;
+    // Salvare le credenziali
+    storage.writeSecureData('username', username);
+    storage.writeSecureData('password', password);
+    print('Username: $username, Password: $password');
+  } else {
+    print("Hai Bevuto troppo");
+  }
+   shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(15),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -100,10 +121,23 @@ class _LoginPageState extends State<LoginPage> {
               child: Text('Login'),
               onPressed: areFieldsValid
                   ? () {
+                SecureStorage()
+                .writeSecureData('name', emailController.text );
+                //devo leggerli
                 Navigator.pushReplacementNamed(context, 'HomePage');
               }
                   : null,
             ),
+            Checkbox(
+              value: isChecked,
+              activeColor: Colors.green,
+              tristate: true,
+              onChanged: (newBool) {
+                setState(() {
+                  isChecked = newBool;
+                });
+              },
+            )
           ],
         ),
       ),

@@ -30,7 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: ^2.2.2
+  shared_preferences: ^2.2.2  # generalmente per i boolean tipo cookie
+  flutter_secure_storage: ^9.0.0  # Per futuro Login Protteto e la prassi usarlo
 
   # Aggiungi questa riga per aggiungere il pacchetto http
   http: ^0.13.3

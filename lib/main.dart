@@ -1,5 +1,5 @@
 import 'package:bartolinimauri/pages/home_page.dart';
-import 'package:bartolinimauri/pages/login_page.dart';
+import 'package:bartolinimauri/Login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'Screen/SplashScreen.dart';
 
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) =>SplashScreen(), //la splash screen come schermata iniziale
-        'Loginpage': (context) => LoginPage(),
+        'Loginpage': (context) => LoginPage(), // Login attualmente sospesa
         'HomePage': (context) => HomePage(),
       },
     );

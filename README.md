@@ -1,6 +1,6 @@
 # bartolinimauri
 
-A new Flutter project.
+A new Flutter project for my project work
 
 ## Getting Started
 
